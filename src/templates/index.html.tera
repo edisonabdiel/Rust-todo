@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <ul>
+        {% for task in tasks %}
+        <li>
+            {{ task.description }}
+            {% if task.completed %}
+            (completed)
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

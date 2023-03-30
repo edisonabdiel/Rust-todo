@@ -1,29 +1,29 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 mod task;
-mod store;
 
-use store::TaskStore;
-
+use std::sync::Mutex;
 
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate rocket_dyn_templates;
-extern crate tera;
+#[macro_use] extern crate rocket_contrib;
+
+mod routes;
+use routes::stage;
+
+use task::{Task, NewTask};
+
+fn rocket() -> rocket::Rocket {
+    let tasks: Mutex<Vec<Task>> = Mutex::new(Vec::new());
+
+    rocket::build()
+        .manage(tasks)
+        .attach(rocket_dyn_templates::Template::fairing())
+        .attach(stage())
+}
 
 use rocket::fairing::AdHoc;
-use rocket_dyn_templates::Template;
+use rocket_contrib::templates::Template;
 
 fn main() {
-    let task_store = TaskStore::new();
-
-    rocket::ignite()
-        .manage(task_store)
-        .attach(Template::fairing())
-        .attach(AdHoc::on_attach("Tera Config", |rocket| {
-            let tera = rocket.state::<Template>().unwrap().tera.clone();
-            let tera = tera.lock().expect("tera instance is poisoned");
-
-            Ok(rocket)
-        }))
-        .launch();
+    rocket().launch();
 }

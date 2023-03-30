@@ -1,17 +1,18 @@
-#[derive(Debug, Clone, Serialize, Deserialize)]
+use serde_derive::{Deserialize, Serialize};
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Task {
-    pub id: u32,
-    pub title: String,
+    pub id: usize,
+    pub description: String,
     pub completed: bool,
 }
 
-impl Task {
-    pub fn new(id: u32, title: String) -> Task {
-        Task {
-            id,
-            title,
-            completed: false,
-        }
-    }
+#[derive(Debug, Deserialize)]
+pub struct NewTask {
+    pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TodoForm {
+    pub description: String,
 }
